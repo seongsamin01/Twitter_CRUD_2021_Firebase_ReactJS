@@ -9,7 +9,7 @@ const Home = ({ userObj }) => {
     console.log(userObj);
     const [tweet, setTweet] = useState("");
     const [tweets, setTweets] = useState([]);
-    const [attachment, setAttachment] = useState()
+    const [attachment, setAttachment] = useState("");
     useEffect(() => {
         dbService.collection("tweets").onSnapshot((snapshot) => {
             const tweetArray = snapshot.docs.map((doc) => ({
@@ -67,7 +67,7 @@ const Home = ({ userObj }) => {
                 value={tweet}
                 onChange={onChange}
                 type="text"
-                placeholder="What's on your mind?"
+                placeholder="입력하세요."
                 maxLength={120}
             />
             <input type="file" accept="image/*" onChange={onFileChange} />
