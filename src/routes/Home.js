@@ -7,7 +7,7 @@ const Home = () => {
         event.preventDefault();
         dbService.collection("tweets").add({
             tweet,
-            createAt: Date.now(),
+            createdAt: Date.now(),
         });
         setTweet("");
     };
