@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { dbService, storageService } from "fbase";
-import { v4 as uuidv4 } from 'uuid'; //npm install uuid
 import Tweet from "components/Tweet";
+import TweetFactory from "components/TweetFactory";
 
 
 
 const Home = ({ userObj }) => {
-    console.log(userObj);
-    const [tweet, setTweet] = useState("");
     const [tweets, setTweets] = useState([]);
-    const [attachment, setAttachment] = useState("");
+
     useEffect(() => {
         dbService.collection("tweets").onSnapshot((snapshot) => {
             const tweetArray = snapshot.docs.map((doc) => ({
@@ -19,67 +17,11 @@ const Home = ({ userObj }) => {
             setTweets(tweetArray);
         });
     }, []);
-    const onSubmit = async (event) => {
-        event.preventDefault();
-        let attachmentUrl = "";
-        if(attachment !== "") {
-            const attachmentRef = storageService
-            .ref()
-            .child(`${userObj.uid}/${uuidv4()} `);
-        const response = await attachmentRef.putString(attachment, "data_url");
-        attachmentUrl = await response.ref.getDownloadURL();
-        }
-        const tweetObj = {
-            text: tweet,
-            createdAt: Date.now(),
-            creatorId: userObj.uid,
-            attachmentUrl
-        };
-        await dbService.collection("tweets").add(tweetObj);
-        setTweet("");
-        setAttachment("");
-    };
-    console.log(tweets);
-    const onChange = (event) => {
-        const { 
-            target: { value },
-        } = event;
-        setTweet(value);
-    };
-    const onFileChange = (event) => {
-        const {
-          target: { files },
-        } = event;
-        const theFile = files[0];
-        const reader = new FileReader();
-        reader.onloadend = (finishedEvent) => {
-          const { currentTarget: { result },
-         } = finishedEvent;
-         setAttachment(result);
-        };
-        reader.readAsDataURL(theFile);
-    };
-    const onClearAttachment = () => setAttachment(null)
+    
     return (
-    <div>
-        <form onSubmit={onSubmit}>
-            <input 
-                value={tweet}
-                onChange={onChange}
-                type="text"
-                placeholder="입력하세요."
-                maxLength={120}
-            />
-            <input type="file" accept="image/*" onChange={onFileChange} />
-            <input type="submit" value="Tweet" />
-            {attachment && (
-              <div>  
-                <img src={attachment} width="50px" height="50px" />
-                <button onClick={onClearAttachment}>Clear</button>
-              </div>
-            )}
-        </form>
-        <div>
+      <div className="container">
+      <TweetFactory userObj={userObj} />  
+      <div style={{ marginTop: 30 }}>
             {tweets.map((tweet) => (
               <Tweet 
                 key={tweet.id}
